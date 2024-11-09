@@ -61,6 +61,7 @@
             color: #4f46e5;
             text-decoration: none;
             transition: all 0.3s ease;
+            cursor: pointer;
         }
 
         .link:hover {
@@ -84,7 +85,47 @@
             animation: fadeIn 0.5s ease-out forwards;
         }
 
-        /* New footer styles */
+        /* Modal styles */
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.5);
+            align-items: center;
+            justify-content: center;
+            z-index: 1000;
+        }
+
+        .modal-content {
+            background: white;
+            padding: 2rem;
+            border-radius: 1rem;
+            width: 90%;
+            max-width: 500px;
+            position: relative;
+            animation: fadeIn 0.3s ease-out;
+        }
+
+        .close-button {
+            position: absolute;
+            top: 1rem;
+            right: 1rem;
+            font-size: 1.5rem;
+            cursor: pointer;
+            color: #6b7280;
+        }
+
+        .admin-card {
+            border: 1px solid #e5e7eb;
+            padding: 1rem;
+            border-radius: 0.5rem;
+            margin-top: 1rem;
+        }
+
+        /* Previous footer styles remain the same */
         .footer {
             border-top: 1px solid #e5e7eb;
             margin-top: 2rem;
@@ -110,7 +151,7 @@
     <div class="login-card animated">
         <!-- Header -->
         <div class="text-center">
-            <h2 class="text-3xl font-bold text-gray-900 mb-2">Welcome, All the Best for Exams !!! </h2>
+            <h2 class="text-3xl font-bold text-gray-900 mb-2">Welcome, All the Best for Exams!!!</h2>
             <p class="text-gray-600 text-sm mb-8">
                 Please sign in to your student account
             </p>
@@ -179,22 +220,52 @@
             <div class="text-center mt-6">
                 <p class="text-sm text-gray-600">
                     Don't have an account? 
-                    <a href="#" class="link font-medium">
+                    <a onclick="openModal()" class="link font-medium">
                         Contact your administrator
                     </a>
                 </p>
             </div>
         </form>
 
-        <!-- New Footer -->
+        <!-- Footer -->
         <div class="footer">
             <p>© 2024 All rights reserved by xExams Pvt Ltd.</p>
             <p class="mt-1">Made with <span class="heart-icon">♥</span> by Jimit & Suraj</p>
         </div>
     </div>
 
+    <!-- Admin Contact Modal -->
+    <div id="adminModal" class="modal">
+        <div class="modal-content">
+            <span class="close-button" onclick="closeModal()">&times;</span>
+            <h2 class="text-2xl font-bold text-gray-900 mb-4">Administrator Contact Information</h2>
+            
+            <div class="admin-card">
+                <h3 class="font-semibold text-lg text-gray-900">School of Technology</h3>
+                <div class="space-y-2 mt-3">
+                    <p class="text-gray-700"><strong>Faculty Name:</strong> Dr. Janak Patel</p>
+                    <p class="text-gray-700"><strong>Designation:</strong> Assistant Professor</p>
+                    <p class="text-gray-700"><strong>Cabin:</strong> Room no: 701, F Block</p>
+                    <p class="text-gray-700"><strong>Phone:</strong> <a href="tel:+91 8200XXXXXX" class="link">+91 8200XXXXXX</a></p>
+                    <p class="text-gray-700"><strong>Email:</strong> <a href="mailto:admin@college.edu" class="link">admin@college.edu</a></p>
+                </div>
+            </div>
+
+            <div class="admin-card">
+                <h3 class="font-semibold text-lg text-gray-900">Technical Support</h3>
+                <div class="space-y-2 mt-3">
+                    <p class="text-gray-700"><strong>Faculty Name:</strong> Mr. Mohan Raj</p>
+                    <p class="text-gray-700"><strong>Designation:</strong> IT Administrator</p>
+                    <p class="text-gray-700"><strong>Cabin:</strong> Room 101, IT Department</p>
+                    <p class="text-gray-700"><strong>Phone:</strong> <a href="tel:+91 8200XXXXXX" class="link">+91 8200XXXXXX</a></p>
+                    <p class="text-gray-700"><strong>Email:</strong> <a href="mailto:support@college.edu" class="link">support@college.edu</a></p>
+                </div>
+            </div>
+        </div>
+    </div>
+
     <script>
-        // Add some basic form validation
+        // Form validation
         document.querySelector('form').addEventListener('submit', function(e) {
             e.preventDefault();
             const email = document.getElementById('email').value;
@@ -205,9 +276,25 @@
                 return;
             }
 
-            // Here you would typically make an API call to your backend
             console.log('Login attempt:', { email });
         });
+
+        // Modal functions
+        function openModal() {
+            document.getElementById('adminModal').style.display = 'flex';
+        }
+
+        function closeModal() {
+            document.getElementById('adminModal').style.display = 'none';
+        }
+
+        // Close modal when clicking outside
+        window.onclick = function(event) {
+            const modal = document.getElementById('adminModal');
+            if (event.target == modal) {
+                closeModal();
+            }
+        }
     </script>
 </body>
 </html>
