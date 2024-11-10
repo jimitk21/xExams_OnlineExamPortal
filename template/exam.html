@@ -1,0 +1,174 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>xExams - Online Examination</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        .gradient-bg {
+            background: linear-gradient(135deg, #f0f7ff 0%, #e0e7ff 100%);
+        }
+        #camera-feed {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            width: 200px;
+            height: 150px;
+            border-radius: 8px;
+            border: 2px solid #4f46e5;
+            background-color: #000;
+            z-index: 1000;
+        }
+        .question-card {
+            transition: all 0.3s ease;
+        }
+        .question-card:hover {
+            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+        }
+        .timer {
+            animation: pulse 2s infinite;
+        }
+        @keyframes pulse {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.05); }
+            100% { transform: scale(1); }
+        }
+    </style>
+</head>
+<body class="gradient-bg min-h-screen">
+    <!-- Navigation -->
+    <nav class="bg-white shadow-lg">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex justify-between h-16">
+                <div class="flex items-center">
+                    <h1 class="text-2xl font-bold text-indigo-600">xExams Pvt Ltd.</h1>
+                </div>
+                <div class="flex items-center space-x-4">
+                    <div class="timer bg-indigo-100 px-4 py-2 rounded-lg">
+                        <span id="timer" class="text-indigo-600 font-bold">02:00:00</span>
+                    </div>
+                    <button id="submit-exam" class="bg-red-600 text-white px-4 py-2 rounded-lg hover:bg-red-700">
+                        End Exam
+                    </button>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Main Content -->
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+        <!-- Exam Info -->
+        <div class="bg-white rounded-xl shadow-md p-6 mb-8">
+            <h2 class="text-2xl font-bold text-gray-900 mb-2">Data Structures Examination</h2>
+            <div class="text-gray-600">
+                <p>Total Questions: 30 | Duration: 2 hours | Maximum Marks: 60</p>
+            </div>
+        </div>
+
+        <!-- Question Section -->
+        <div class="space-y-6">
+            <!-- Question Card -->
+            <div class="bg-white rounded-xl shadow-md p-6 question-card">
+                <div class="flex justify-between mb-4">
+                    <span class="text-indigo-600 font-semibold">Question 1 of 30</span>
+                    <span class="text-gray-600">Marks: 2</span>
+                </div>
+                <div class="mb-6">
+                    <p class="text-lg text-gray-800 mb-4">What is the time complexity of binary search algorithm?</p>
+                    <div class="space-y-3">
+                        <label class="flex items-center space-x-3 p-3 border rounded-lg hover:bg-indigo-50 cursor-pointer">
+                            <input type="radio" name="q1" class="form-radio text-indigo-600">
+                            <span>O(n)</span>
+                        </label>
+                        <label class="flex items-center space-x-3 p-3 border rounded-lg hover:bg-indigo-50 cursor-pointer">
+                            <input type="radio" name="q1" class="form-radio text-indigo-600">
+                            <span>O(log n)</span>
+                        </label>
+                        <label class="flex items-center space-x-3 p-3 border rounded-lg hover:bg-indigo-50 cursor-pointer">
+                            <input type="radio" name="q1" class="form-radio text-indigo-600">
+                            <span>O(n²)</span>
+                        </label>
+                        <label class="flex items-center space-x-3 p-3 border rounded-lg hover:bg-indigo-50 cursor-pointer">
+                            <input type="radio" name="q1" class="form-radio text-indigo-600">
+                            <span>O(n log n)</span>
+                        </label>
+                    </div>
+                </div>
+                <div class="flex justify-between">
+                    <button class="bg-gray-200 text-gray-700 px-4 py-2 rounded-lg hover:bg-gray-300" disabled>
+                        Previous
+                    </button>
+                    <button class="bg-indigo-600 text-white px-4 py-2 rounded-lg hover:bg-indigo-700">
+                        Next
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Camera Feed -->
+    <video id="camera-feed" autoplay playsinline></video>
+
+    <!-- Question Navigation -->
+    <div class="fixed bottom-0 left-0 right-0 bg-white border-t shadow-lg p-4">
+        <div class="max-w-7xl mx-auto">
+            <div class="flex flex-wrap gap-2">
+                <button class="w-10 h-10 rounded-lg bg-green-100 text-green-600 flex items-center justify-center font-semibold">1</button>
+                <button class="w-10 h-10 rounded-lg bg-gray-100 text-gray-600 flex items-center justify-center font-semibold">2</button>
+                <button class="w-10 h-10 rounded-lg bg-gray-100 text-gray-600 flex items-center justify-center font-semibold">3</button>
+                <!-- Add more question numbers as needed -->
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Camera access
+        async function setupCamera() {
+            try {
+                const stream = await navigator.mediaDevices.getUserMedia({ video: true });
+                const videoElement = document.getElementById('camera-feed');
+                videoElement.srcObject = stream;
+            } catch (err) {
+                console.error('Error accessing camera:', err);
+                alert('Camera access is required for this examination. Please allow camera access and refresh the page.');
+            }
+        }
+
+        // Timer functionality
+        function startTimer() {
+            let time = 2 * 60 * 60; // 2 hours in seconds
+            const timerElement = document.getElementById('timer');
+
+            const timer = setInterval(() => {
+                const hours = Math.floor(time / 3600);
+                const minutes = Math.floor((time % 3600) / 60);
+                const seconds = time % 60;
+
+                timerElement.textContent = `${String(hours).padStart(2, '0')}:${String(minutes).padStart(2, '0')}:${String(seconds).padStart(2, '0')}`;
+
+                if (time <= 0) {
+                    clearInterval(timer);
+                    alert('Time\'s up! Your exam will be submitted automatically.');
+                    // Add submission logic here
+                }
+                time--;
+            }, 1000);
+        }
+
+        // Initialize
+        document.addEventListener('DOMContentLoaded', () => {
+            setupCamera();
+            startTimer();
+
+            // Handle end exam button
+            document.getElementById('submit-exam').addEventListener('click', () => {
+                if (confirm('Are you sure you want to end the exam?')) {
+                    // Add submission logic here
+                    window.location.href = 'welcome.html';
+                }
+            });
+        });
+    </script>
+</body>
+</html>
