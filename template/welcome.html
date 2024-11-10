@@ -1,0 +1,140 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Welcome to xExams</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css">
+    <style>
+        .gradient-bg {
+            background: linear-gradient(135deg, #f0f7ff 0%, #e0e7ff 100%);
+        }
+        .card-hover {
+            transition: all 0.3s ease;
+        }
+        .card-hover:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 20px rgba(0,0,0,0.1);
+        }
+        .animate-float {
+            animation: float 3s ease-in-out infinite;
+        }
+        @keyframes float {
+            0% { transform: translateY(0px); }
+            50% { transform: translateY(-10px); }
+            100% { transform: translateY(0px); }
+        }
+    </style>
+</head>
+<body class="gradient-bg min-h-screen">
+    <!-- Navigation -->
+    <nav class="bg-white shadow-lg">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex justify-between h-16">
+                <div class="flex items-center">
+                    <h1 class="text-2xl font-bold text-indigo-600">xExams Pvt Ltd.</h1>
+                </div>
+                <div class="flex items-center space-x-4">
+                    <button class="text-gray-600 hover:text-indigo-600">User Profile</button>
+                    <button class="bg-indigo-600 text-white px-4 py-2 rounded-lg hover:bg-indigo-700">
+                        Start Exam
+                    </button>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Hero Section -->
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
+        <div class="text-center animate__animated animate__fadeIn">
+            <h2 class="text-4xl font-bold text-gray-900 mb-4">
+                Welcome to Your Online Examination Portal
+            </h2>
+            <p class="text-xl text-gray-600 mb-8">
+                Your gateway to seamless online assessments
+            </p>
+        </div>
+
+        <!-- Quick Stats -->
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-12">
+            <div class="bg-white p-6 rounded-xl shadow-md card-hover animate__animated animate__fadeInUp">
+                <div class="text-center">
+                    <div class="text-2xl font-bold text-indigo-600 mb-2">2</div>
+                    <div class="text-gray-600">Upcoming Exams</div>
+                </div>
+            </div>
+            <div class="bg-white p-6 rounded-xl shadow-md card-hover animate__animated animate__fadeInUp" style="animation-delay: 0.2s">
+                <div class="text-center">
+                    <div class="text-2xl font-bold text-green-600 mb-2">85%</div>
+                    <div class="text-gray-600">Average Score</div>
+                </div>
+            </div>
+            <div class="bg-white p-6 rounded-xl shadow-md card-hover animate__animated animate__fadeInUp" style="animation-delay: 0.4s">
+                <div class="text-center">
+                    <div class="text-2xl font-bold text-purple-600 mb-2">5</div>
+                    <div class="text-gray-600">Completed Exams</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Features Section -->
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 mb-12">
+            <div class="bg-white p-6 rounded-xl shadow-md card-hover">
+                <div class="text-indigo-600 mb-4">
+                    <svg class="w-12 h-12" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                    </svg>
+                </div>
+                <h3 class="text-xl font-semibold mb-2">Time Management</h3>
+                <p class="text-gray-600">Efficiently manage your exam time with our built-in timer and progress tracker.</p>
+            </div>
+
+            <div class="bg-white p-6 rounded-xl shadow-md card-hover">
+                <div class="text-green-600 mb-4">
+                    <svg class="w-12 h-12" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                    </svg>
+                </div>
+                <h3 class="text-xl font-semibold mb-2">Auto Save</h3>
+                <p class="text-gray-600">Your answers are automatically saved as you progress through the exam.</p>
+            </div>
+
+            <div class="bg-white p-6 rounded-xl shadow-md card-hover">
+                <div class="text-purple-600 mb-4">
+                    <svg class="w-12 h-12" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"></path>
+                    </svg>
+                </div>
+                <h3 class="text-xl font-semibold mb-2">Instant Results</h3>
+                <p class="text-gray-600">Get immediate feedback and detailed analysis of your performance.</p>
+            </div>
+        </div>
+
+        <!-- Upcoming Exams Section -->
+        <div class="bg-white rounded-xl shadow-md p-6 mb-12">
+            <h3 class="text-2xl font-bold mb-6">Upcoming Exams</h3>
+            <div class="space-y-4">
+                <div class="border-l-4 border-indigo-600 pl-4 py-2">
+                    <div class="font-semibold">Data Structures</div>
+                    <div class="text-sm text-gray-600">Tomorrow, 10:00 AM</div>
+                </div>
+                <div class="border-l-4 border-gray-300 pl-4 py-2">
+                    <div class="font-semibold">Database Management</div>
+                    <div class="text-sm text-gray-600">Next Week, 2:00 PM</div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Footer -->
+    <footer class="bg-white border-t">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+            <div class="text-center text-gray-600">
+                <p>© 2024 All rights reserved by xExams Pvt Ltd.</p>
+                <p class="mt-2">Made with ♥ by Jimit & Suraj</p>
+            </div>
+        </div>
+    </footer>
+</body>
+</html>

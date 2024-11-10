@@ -7,7 +7,7 @@
     <!-- Tailwind CSS CDN -->
     <script src="https://cdn.tailwindcss.com"></script>
     <style>
-        /* Previous styles remain the same */
+        /* ... previous styles remain the same ... */
         .login-container {
             background: linear-gradient(to bottom right, #f0f7ff, #e0e7ff);
             min-height: 100vh;
@@ -75,7 +75,6 @@
             border: 1px solid #d1d5db;
         }
 
-        /* Animation for form elements */
         @keyframes fadeIn {
             from { opacity: 0; transform: translateY(10px); }
             to { opacity: 1; transform: translateY(0); }
@@ -85,7 +84,6 @@
             animation: fadeIn 0.5s ease-out forwards;
         }
 
-        /* Modal styles */
         .modal {
             display: none;
             position: fixed;
@@ -125,7 +123,6 @@
             margin-top: 1rem;
         }
 
-        /* Previous footer styles remain the same */
         .footer {
             border-top: 1px solid #e5e7eb;
             margin-top: 2rem;
@@ -158,7 +155,7 @@
         </div>
 
         <!-- Login Form -->
-        <form class="space-y-6">
+        <form id="loginForm" class="space-y-6">
             <div class="space-y-4">
                 <div>
                     <label for="email" class="block text-sm font-medium text-gray-700">
@@ -207,9 +204,8 @@
                 </a>
             </div>
 
-            <button type="submit" class="submit-button">
+            <button type="submit" class="submit-button" id="loginButton">
                 <span class="absolute left-0 inset-y-0 flex items-center pl-3">
-                    <!-- Lock Icon -->
                     <svg class="h-5 w-5 text-indigo-300" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor">
                         <path fill-rule="evenodd" d="M5 9V7a5 5 0 0110 0v2a2 2 0 012 2v5a2 2 0 01-2 2H5a2 2 0 01-2-2v-5a2 2 0 012-2zm8-2v2H7V7a3 3 0 016 0z" clip-rule="evenodd" />
                     </svg>
@@ -250,7 +246,6 @@
                     <p class="text-gray-700"><strong>Email:</strong> <a href="mailto:admin@college.edu" class="link">admin@college.edu</a></p>
                 </div>
             </div>
-
             <div class="admin-card">
                 <h3 class="font-semibold text-lg text-gray-900">Technical Support</h3>
                 <div class="space-y-2 mt-3">
@@ -265,18 +260,28 @@
     </div>
 
     <script>
-        // Form validation
-        document.querySelector('form').addEventListener('submit', function(e) {
+        // Updated login form handler with redirection
+        document.getElementById('loginForm').addEventListener('submit', function(e) {
             e.preventDefault();
+            
             const email = document.getElementById('email').value;
             const password = document.getElementById('password').value;
 
+            // Basic validation
             if (!email || !password) {
                 alert('Please fill in all fields');
                 return;
             }
 
-            console.log('Login attempt:', { email });
+            // Email validation
+            const emailPattern = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+            if (!emailPattern.test(email)) {
+                alert('Please enter a valid email address');
+                return;
+            }
+
+            // Redirect to welcome page
+            window.location.href = 'welcome.html';
         });
 
         // Modal functions
