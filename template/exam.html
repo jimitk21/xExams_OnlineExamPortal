@@ -21,320 +21,577 @@
             background-color: #000;
             z-index: 1000;
         }
-        .warning-banner {
+        .tab-switch-counter {
             position: fixed;
             top: 20px;
             left: 50%;
             transform: translateX(-50%);
-            background-color: #ef4444;
+            background-color: rgba(239, 68, 68, 0.9);
             color: white;
             padding: 0.5rem 1rem;
             border-radius: 0.375rem;
             z-index: 1002;
-            display: none;
+            display: flex;
+            align-items: center;
+            gap: 1rem;
         }
-        .warning-list {
+        .warning-modal {
+            display: none;
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background-color: white;
+            padding: 2rem;
+            border-radius: 0.5rem;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            z-index: 1100;
+            width: 90%;
+            max-width: 500px;
+            max-height: 80vh;
+            overflow-y: auto;
+        }
+        .modal-overlay {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-color: rgba(0, 0, 0, 0.5);
+            z-index: 1099;
+        }
+        .warning-item {
+            padding: 0.5rem;
+            border-bottom: 1px solid #e5e7eb;
+        }
+        .warning-item:last-child {
+            border-bottom: none;
+        }
+        .timer {
             position: fixed;
             top: 20px;
             right: 20px;
-            background-color: rgba(239, 68, 68, 0.9);
+            background-color: #4f46e5;
             color: white;
-            padding: 1rem;
+            padding: 0.75rem 1.5rem;
+            border-radius: 0.5rem;
+            font-size: 1.25rem;
+            font-weight: bold;
+            z-index: 1001;
+        }
+        .question-navigation {
+            position: fixed;
+            left: 0;
+            top: 0;
+            bottom: 0;
+            width: 60px;
+            background-color: white;
+            padding: 1rem 0.5rem;
+            box-shadow: 2px 0 4px rgba(0, 0, 0, 0.1);
+            overflow-y: auto;
+            display: flex;
+            flex-direction: column;
+            gap: 0.5rem;
+            z-index: 1001;
+        }
+        .question-navigation::-webkit-scrollbar {
+            width: 4px;
+        }
+        .question-navigation::-webkit-scrollbar-thumb {
+            background-color: #cbd5e1;
+            border-radius: 2px;
+        }
+        .question-button {
+            width: 100%;
+            aspect-ratio: 1;
             border-radius: 0.375rem;
-            z-index: 1002;
-            max-width: 300px;
+            border: 1px solid #e5e7eb;
+            background-color: white;
+            cursor: pointer;
+            transition: all 0.2s;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 0.875rem;
+            font-weight: 500;
         }
-        .question-card {
-            transition: all 0.3s ease;
+        .question-button:hover {
+            border-color: #4f46e5;
         }
-        .question-card:hover {
-            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+        .question-button.attempted {
+            background-color: #10B981;
+            color: white;
+            border-color: #10B981;
         }
-        .timer {
-            animation: pulse 2s infinite;
+        .question-button.marked {
+            background-color: #F59E0B;
+            color: white;
+            border-color: #F59E0B;
         }
-        @keyframes pulse {
-            0% { transform: scale(1); }
-            50% { transform: scale(1.05); }
-            100% { transform: scale(1); }
+        .question-button.current {
+            border: 2px solid #4f46e5;
+            font-weight: bold;
+            background-color: #e0e7ff;
+        }
+        .main-content {
+            margin-left: 80px;
         }
     </style>
 </head>
 <body class="gradient-bg min-h-screen">
-    <!-- Warning Banner -->
-    <div id="warning-banner" class="warning-banner">
-        Warning: Suspicious Activity Detected
+    <!-- Tab Switch Counter with Warning Button -->
+    <div class="tab-switch-counter">
+        <span>Tab Switches: <span id="tab-switch-count">0</span></span>
+        <button id="warning-btn" class="bg-yellow-500 hover:bg-yellow-600 text-white px-3 py-1 rounded-lg text-sm">
+            View Warnings
+        </button>
     </div>
 
-    <!-- Warning List -->
-    <div id="warning-list" class="warning-list hidden">
-        <h3 class="font-bold mb-2">Warnings:</h3>
-        <ul id="warnings"></ul>
+    <!-- Timer -->
+    <div class="timer" id="exam-timer">03:00:00</div>
+
+    <!-- Warning Modal -->
+    <div class="modal-overlay" id="modal-overlay"></div>
+    <div class="warning-modal" id="warning-modal">
+        <div class="flex justify-between items-center mb-4">
+            <h2 class="text-xl font-bold text-gray-900">Warning History</h2>
+            <button id="close-modal" class="text-gray-500 hover:text-gray-700">
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+                </svg>
+            </button>
+        </div>
+        <div id="warning-list" class="space-y-2">
+            <!-- Warnings will be added here -->
+        </div>
     </div>
 
-    <!-- Navigation -->
-    <nav class="bg-white shadow-lg">
-        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-            <div class="flex justify-between h-16">
-                <div class="flex items-center">
-                    <h1 class="text-2xl font-bold text-indigo-600">xExams Pvt Ltd.</h1>
-                </div>
-                <div class="flex items-center space-x-4">
-                    <div class="timer bg-indigo-100 px-4 py-2 rounded-lg">
-                        <span id="timer" class="text-indigo-600 font-bold">02:00:00</span>
-                    </div>
-                    <button id="submit-exam" class="bg-red-600 text-white px-4 py-2 rounded-lg hover:bg-red-700">
-                        End Exam
+    <!-- Question Navigation -->
+    <div class="question-navigation" id="question-nav">
+        <!-- Question buttons will be added here -->
+    </div>
+
+    <!-- Main Exam Content -->
+    <div class="container mx-auto px-4 py-8 mt-16">
+        <!-- Question Area -->
+        <div class="bg-white rounded-lg shadow-lg p-6 mb-6">
+            <div class="flex justify-between items-center mb-4">
+                <h2 class="text-xl font-bold" id="question-number">Question 1 of 30</h2>
+                <div class="flex gap-2">
+                    <button id="mark-review" class="px-4 py-2 bg-yellow-500 text-white rounded hover:bg-yellow-600">
+                        Mark for Review
+                    </button>
+                    <button id="clear-response" class="px-4 py-2 bg-gray-500 text-white rounded hover:bg-gray-600">
+                        Clear Response
                     </button>
                 </div>
+            </div>
+            <div id="question-content" class="mb-6">
+                <!-- Question content will be loaded here -->
+            </div>
+            <div id="options" class="space-y-4">
+                <!-- Options will be loaded here -->
             </div>
         </div>
-    </nav>
 
-    <!-- Main Content -->
-    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-        <!-- Exam Info -->
-        <div class="bg-white rounded-xl shadow-md p-6 mb-8">
-            <h2 class="text-2xl font-bold text-gray-900 mb-2">Data Structures Examination</h2>
-            <div class="text-gray-600">
-                <p>Total Questions: 30 | Duration: 2 hours | Maximum Marks: 60</p>
-            </div>
-        </div>
-
-        <!-- Questions Container -->
-        <div id="questions-container" class="space-y-6">
-            <!-- Sample Question -->
-            <div class="bg-white rounded-xl shadow-md p-6 question-card">
-                <div class="flex justify-between mb-4">
-                    <span class="text-indigo-600 font-semibold">Question 1 of 30</span>
-                    <span class="text-gray-600">Marks: 2</span>
-                </div>
-                <div class="mb-6">
-                    <p class="text-lg text-gray-800 mb-4">What is the time complexity of binary search algorithm?</p>
-                    <div class="space-y-3">
-                        <label class="flex items-center space-x-3 p-3 border rounded-lg hover:bg-indigo-50 cursor-pointer">
-                            <input type="radio" name="q1" class="form-radio text-indigo-600">
-                            <span>O(n)</span>
-                        </label>
-                        <label class="flex items-center space-x-3 p-3 border rounded-lg hover:bg-indigo-50 cursor-pointer">
-                            <input type="radio" name="q1" class="form-radio text-indigo-600">
-                            <span>O(log n)</span>
-                        </label>
-                        <label class="flex items-center space-x-3 p-3 border rounded-lg hover:bg-indigo-50 cursor-pointer">
-                            <input type="radio" name="q1" class="form-radio text-indigo-600">
-                            <span>O(n²)</span>
-                        </label>
-                        <label class="flex items-center space-x-3 p-3 border rounded-lg hover:bg-indigo-50 cursor-pointer">
-                            <input type="radio" name="q1" class="form-radio text-indigo-600">
-                            <span>O(n log n)</span>
-                        </label>
-                    </div>
-                </div>
-                <div class="flex justify-between">
-                    <button class="bg-gray-200 text-gray-700 px-4 py-2 rounded-lg hover:bg-gray-300" disabled>
-                        Previous
-                    </button>
-                    <button class="bg-indigo-600 text-white px-4 py-2 rounded-lg hover:bg-indigo-700">
-                        Next
-                    </button>
-                </div>
-            </div>
+        <!-- Navigation Buttons -->
+        <div class="flex justify-between items-center">
+            <button id="prev-question" class="px-6 py-2 bg-indigo-600 text-white rounded hover:bg-indigo-700">
+                Previous
+            </button>
+            <button id="next-question" class="px-6 py-2 bg-indigo-600 text-white rounded hover:bg-indigo-700">
+                Next
+            </button>
+            <button id="submit-exam" class="px-6 py-2 bg-green-600 text-white rounded hover:bg-green-700">
+                Submit Exam
+            </button>
         </div>
     </div>
 
     <!-- Camera Feed -->
-    <video id="camera-feed" autoplay playsinline></video>
-
-    <!-- Question Navigation -->
-    <div class="fixed bottom-0 left-0 right-0 bg-white border-t shadow-lg p-4">
-        <div class="max-w-7xl mx-auto">
-            <div class="flex flex-wrap gap-2" id="question-nav">
-                <!-- Question navigation buttons will be generated here -->
-            </div>
-        </div>
-    </div>
+    <video id="camera-feed" autoplay muted></video>
 
     <script>
+        // Variables
         let socket;
         let videoElement;
-        let canvas;
         let warningTimeout;
         let currentQuestion = 1;
-        const totalQuestions = 30;
+        let totalQuestions = 30;
+        let tabSwitchCount = 0;
+        let isFullscreen = false;
+        let warnings = [];
+        let examTimer;
+        let responses = new Array(totalQuestions).fill(null);
+        let markedQuestions = new Set();
+        let timeRemaining = 3 * 60 * 60; // 3 hours in seconds
 
-        // Sample questions data
-        const questionsData = [
-            {
-                id: 1,
-                question: "What is the time complexity of binary search algorithm?",
-                options: ["O(n)", "O(log n)", "O(n²)", "O(n log n)"],
-                marks: 2
-            },
-            // Add more questions here
-        ];
+        // Initialize
+        document.addEventListener('DOMContentLoaded', () => {
+            initializeExam();
+            initializeCamera();
+            initializeProctoring();
+            initializeTimer();
+            createQuestionNavigation();
+        });
 
-        function generateQuestionNav() {
+        // Exam Initialization
+        function initializeExam() {
+            loadQuestion(currentQuestion);
+            document.getElementById('prev-question').addEventListener('click', () => navigateQuestion(-1));
+            document.getElementById('next-question').addEventListener('click', () => navigateQuestion(1));
+            document.getElementById('mark-review').addEventListener('click', toggleMarkForReview);
+            document.getElementById('clear-response').addEventListener('click', clearResponse);
+            document.getElementById('submit-exam').addEventListener('click', confirmSubmitExam);
+        }
+
+        // Timer Functions
+        function initializeTimer() {
+            examTimer = setInterval(() => {
+                timeRemaining--;
+                updateTimerDisplay();
+                if (timeRemaining <= 0) {
+                    clearInterval(examTimer);
+                    submitExam();
+                }
+            }, 1000);
+        }
+
+        function updateTimerDisplay() {
+            const hours = Math.floor(timeRemaining / 3600);
+            const minutes = Math.floor((timeRemaining % 3600) / 60);
+            const seconds = timeRemaining % 60;
+            document.getElementById('exam-timer').textContent = 
+                `${String(hours).padStart(2, '0')}:${String(minutes).padStart(2, '0')}:${String(seconds).padStart(2, '0')}`;
+        }
+
+        // Question Navigation
+        function createQuestionNavigation() {
             const nav = document.getElementById('question-nav');
             for (let i = 1; i <= totalQuestions; i++) {
                 const button = document.createElement('button');
-                button.className = `w-10 h-10 rounded-lg ${i === 1 ? 'bg-green-100 text-green-600' : 'bg-gray-100 text-gray-600'} flex items-center justify-center font-semibold`;
+                button.className = 'question-button';
                 button.textContent = i;
-                button.onclick = () => navigateToQuestion(i);
+                button.onclick = () => loadQuestion(i);
+                nav.appendChild(button);
+            }
+            updateQuestionNavigation();
+        }
+
+        function updateQuestionNavigation() {
+            const buttons = document.querySelectorAll('.question-button');
+            buttons.forEach((button, index) => {
+                button.classList.remove('current', 'attempted', 'marked');
+                if (index + 1 === currentQuestion) button.classList.add('current');
+                if (responses[index] !== null) button.classList.add('attempted');
+                if (markedQuestions.has(index + 1)) button.classList.add('marked');
+            });
+        }
+
+        // Question Management
+        function loadQuestion(questionNumber) {
+            currentQuestion = questionNumber;
+            document.getElementById('question-number').textContent = `Question ${questionNumber} of ${totalQuestions}`;
+            // Simulate loading question content
+            document.getElementById('question-content').innerHTML = `
+                <p class="text-lg mb-4">This is sample question ${questionNumber}.</p>
+            `;
+            document.getElementById('options').innerHTML = `
+                <div class="flex items-center space-x-2">
+                    <input type="radio" name="q${questionNumber}" value="A" ${responses[questionNumber-1] === 'A' ? 'checked' : ''}>
+                    <label>Option A</label>
+                </div>
+                <div class="flex items-center space-x-2">
+                    <input type="radio" name="q${questionNumber}" value="B" ${responses[questionNumber-1] === 'B' ? 'checked' : ''}>
+                    <label>Option B</label>
+                </div>
+                <div class="flex items-center space-x-2">
+                    <input type="radio" name="q${questionNumber}" value="C" ${responses[questionNumber-1] === 'C' ? 'checked' : ''}>
+                    <label>Option C</label>
+                </div>
+                <div class="flex items-center space-x-2">
+                    <input type="radio" name="q${questionNumber}" value="D" ${responses[questionNumber-1] === 'D' ? 'checked' : ''}>
+                    <label>Option D</label>
+                </div>
+            `;
+            updateQuestionNavigation();
+            
+            // Add change event listener to save responses
+            const options = document.querySelectorAll(`input[name="q${questionNumber}"]`);
+            options.forEach(option => {
+                option.addEventListener('change', (e) => {
+                    responses[questionNumber-1] = e.target.value;
+                    updateQuestionNavigation();
+                });
+            });
+        }
+
+        function navigateQuestion(delta) {
+            const newQuestion = currentQuestion + delta;
+            if (newQuestion >= 1 && newQuestion <= totalQuestions) {
+                loadQuestion(newQuestion);
+            }
+        }
+
+        function toggleMarkForReview() {
+            if (markedQuestions.has(currentQuestion)) {
+                markedQuestions.delete(currentQuestion);
+            } else {
+                markedQuestions.add(currentQuestion);
+            }
+            updateQuestionNavigation();
+        }
+
+        function clearResponse() {
+            responses[currentQuestion-1] = null;
+            const options = document.querySelectorAll(`input[name="q${currentQuestion}"]`);
+            options.forEach(option => option.checked = false);
+            updateQuestionNavigation();
+        }
+
+        // Proctoring Functions
+        function initializeProctoring() {
+            // Tab switch detection
+            document.addEventListener('visibilitychange', () => {
+                if (document.hidden) {
+                    tabSwitchCount++;
+                    document.getElementById('tab-switch-count').textContent = tabSwitchCount;
+                    showWarning('Tab switch detected');
+                }
+            });
+
+            // Fullscreen detection
+            document.addEventListener('fullscreenchange', () => {
+                isFullscreen = !!document.fullscreenElement;
+                if (!isFullscreen) {
+                    showWarning('Fullscreen mode exited');
+                }
+            });
+
+            // Initialize modal controls
+            document.getElementById('warning-btn').addEventListener('click', toggleWarningModal);
+            document.getElementById('close-modal').addEventListener('click', toggleWarningModal);
+            document.getElementById('modal-overlay').addEventListener('click', toggleWarningModal);
+        }
+
+        function initializeCamera() {
+            videoElement = document.getElementById('camera-feed');
+            navigator.mediaDevices.getUserMedia({ video: true })
+                .then(stream => {
+                    videoElement.srcObject = stream;
+                })
+                .catch(err => {
+                    showWarning('Camera access denied');
+                });
+        }
+
+        // Warning System
+        function showWarning(warning) {
+            const timestamp = new Date().toLocaleTimeString();
+            warnings.push({ message: warning, timestamp });
+            updateWarningsList();
+        }
+
+        function updateWarningsList() {
+            const warningList = document.getElementById('warning-list');
+            warningList.innerHTML = warnings.map(warning => `
+                <div class="warning-item">
+                    <div class="text-sm text-gray-600">${warning.timestamp}</div>
+                    <div class="text-gray-800">${warning.message}</div>
+                </div>
+            `).join('');
+        }
+
+        function toggleWarningModal() {
+            const modal = document.getElementById('warning-modal');
+            const overlay = document.getElementById('modal-overlay');
+            const isVisible = modal.style.display === 'block';
+        modal.style.display = isVisible ? 'none' : 'block';
+        overlay.style.display = isVisible ? 'none' : 'block';
+        
+        if (!isVisible) {
+            updateWarningsList();
+        }
+    }
+    function createQuestionNavigation() {
+            const nav = document.getElementById('question-nav');
+            for (let i = 1; i <= 30; i++) {
+                const button = document.createElement('button');
+                button.className = 'question-button';
+                button.textContent = i;
+                button.onclick = () => console.log(`Question ${i} selected`);
                 nav.appendChild(button);
             }
         }
 
-        function navigateToQuestion(questionNumber) {
-            // Update current question
-            currentQuestion = questionNumber;
-            
-            // Update navigation buttons
-            const navButtons = document.querySelectorAll('#question-nav button');
-            navButtons.forEach((btn, index) => {
-                if (index + 1 === questionNumber) {
-                    btn.className = 'w-10 h-10 rounded-lg bg-green-100 text-green-600 flex items-center justify-center font-semibold';
-                } else {
-                    btn.className = 'w-10 h-10 rounded-lg bg-gray-100 text-gray-600 flex items-center justify-center font-semibold';
-                }
-            });
 
-            // Load question content
-            // In a real implementation, you would load the actual question data
-            updateQuestionDisplay(questionNumber);
+    // Exam Submission
+    function confirmSubmitExam() {
+        const attemptedCount = responses.filter(r => r !== null).length;
+        const markedCount = markedQuestions.size;
+        const unattemptedCount = totalQuestions - attemptedCount;
+
+        const confirmationModal = document.createElement('div');
+        confirmationModal.className = 'warning-modal';
+        confirmationModal.style.display = 'block';
+        confirmationModal.innerHTML = `
+            <div class="p-6">
+                <h2 class="text-xl font-bold mb-4">Confirm Submission</h2>
+                <div class="space-y-2 mb-6">
+                    <p>• Questions Attempted: ${attemptedCount}</p>
+                    <p>• Questions Marked for Review: ${markedCount}</p>
+                    <p>• Questions Unattempted: ${unattemptedCount}</p>
+                </div>
+                <p class="text-red-600 mb-6">Are you sure you want to submit the exam?</p>
+                <div class="flex justify-end gap-4">
+                    <button id="cancel-submit" class="px-4 py-2 bg-gray-500 text-white rounded hover:bg-gray-600">
+                        Cancel
+                    </button>
+                    <button id="confirm-submit" class="px-4 py-2 bg-green-600 text-white rounded hover:bg-green-700">
+                        Confirm Submission
+                    </button>
+                </div>
+            </div>
+        `;
+
+        const overlay = document.getElementById('modal-overlay');
+        overlay.style.display = 'block';
+        document.body.appendChild(confirmationModal);
+
+        document.getElementById('cancel-submit').onclick = () => {
+            confirmationModal.remove();
+            overlay.style.display = 'none';
+        };
+
+        document.getElementById('confirm-submit').onclick = () => {
+            submitExam();
+        };
+    }
+
+    function submitExam() {
+        // Stop timer
+        clearInterval(examTimer);
+
+        // Stop camera
+        if (videoElement.srcObject) {
+            videoElement.srcObject.getTracks().forEach(track => track.stop());
         }
 
-        function updateQuestionDisplay(questionNumber) {
-            const questionDisplay = document.querySelector('.question-card');
-            questionDisplay.querySelector('.text-indigo-600').textContent = `Question ${questionNumber} of ${totalQuestions}`;
-            
-            // Update navigation buttons
-            const prevButton = questionDisplay.querySelector('button:first-of-type');
-            const nextButton = questionDisplay.querySelector('button:last-of-type');
-            
-            prevButton.disabled = questionNumber === 1;
-            nextButton.disabled = questionNumber === totalQuestions;
-            
-            if (prevButton.disabled) {
-                prevButton.className = 'bg-gray-200 text-gray-700 px-4 py-2 rounded-lg cursor-not-allowed';
-            } else {
-                prevButton.className = 'bg-gray-200 text-gray-700 px-4 py-2 rounded-lg hover:bg-gray-300';
+        // Prepare submission data
+        const submissionData = {
+            responses,
+            warnings,
+            tabSwitchCount,
+            timeSpent: 3 * 60 * 60 - timeRemaining,
+            submittedAt: new Date().toISOString()
+        };
+
+        // Show submission loading screen
+        const loadingScreen = document.createElement('div');
+        loadingScreen.className = 'fixed inset-0 bg-white bg-opacity-90 flex items-center justify-center z-[2000]';
+        loadingScreen.innerHTML = `
+            <div class="text-center">
+                <div class="animate-spin rounded-full h-16 w-16 border-b-2 border-indigo-600 mx-auto mb-4"></div>
+                <p class="text-xl font-semibold">Submitting your exam...</p>
+            </div>
+        `;
+        document.body.appendChild(loadingScreen);
+
+        // Simulate submission to server (replace with actual API call)
+        setTimeout(() => {
+            // Redirect to results page
+            window.location.href = 'exam-complete.html';
+        }, 2000);
+    }
+
+    // Browser Security
+    function setupBrowserSecurity() {
+        // Disable right click
+        document.addEventListener('contextmenu', e => e.preventDefault());
+
+        // Disable keyboard shortcuts
+        document.addEventListener('keydown', e => {
+            const forbiddenKeys = ['c', 'x', 'v', 'j'];
+            if (e.ctrlKey && forbiddenKeys.includes(e.key.toLowerCase())) {
+                e.preventDefault();
+                showWarning('Keyboard shortcut detected');
             }
-            
-            if (nextButton.disabled) {
-                nextButton.className = 'bg-gray-300 text-gray-500 px-4 py-2 rounded-lg cursor-not-allowed';
-            } else {
-                nextButton.className = 'bg-indigo-600 text-white px-4 py-2 rounded-lg hover:bg-indigo-700';
-            }
-        }
-
-        async function setupProctoring() {
-            videoElement = document.getElementById('camera-feed');
-            canvas = document.createElement('canvas');
-            
-            try {
-                const stream = await navigator.mediaDevices.getUserMedia({ video: true });
-                videoElement.srcObject = stream;
-                
-                // Connect to WebSocket
-                socket = io('http://localhost:5000');
-                
-                socket.on('connect', () => {
-                    console.log('Connected to server');
-                });
-                
-                socket.on('processing_result', handleProcessingResult);
-                
-                // Start sending frames
-                startFrameCapture();
-                
-            } catch (err) {
-                console.error('Error accessing camera:', err);
-                alert('Camera access is required for this examination.');
-            }
-        }
-
-        function startFrameCapture() {
-            setInterval(() => {
-                if (videoElement.readyState === videoElement.HAVE_ENOUGH_DATA) {
-                    canvas.width = videoElement.videoWidth;
-                    canvas.height = videoElement.videoHeight;
-                    
-                    const ctx = canvas.getContext('2d');
-                    ctx.drawImage(videoElement, 0, 0);
-                    
-                    const frameData = canvas.toDataURL('image/jpeg', 0.8);
-                    socket.emit('process_frame', { frame: frameData });
-                }
-            }, 1000);
-        }
-
-        function handleProcessingResult(data) {
-            const warnings = data.warnings;
-            if (warnings && warnings.length > 0) {
-                showWarnings(warnings);
-            }
-        }
-
-        function showWarnings(warnings) {
-            const warningList = document.getElementById('warning-list');
-            const warningItems = document.getElementById('warnings');
-            
-            warningItems.innerHTML = '';
-            warnings.forEach(warning => {
-                const li = document.createElement('li');
-                li.textContent = warning;
-                warningItems.appendChild(li);
-            });
-            
-            warningList.classList.remove('hidden');
-            
-            if (warningTimeout) {
-                clearTimeout(warningTimeout);
-            }
-            
-            warningTimeout = setTimeout(() => {
-                warningList.classList.add('hidden');
-            }, 3000);
-        }
-
-        function startTimer() {
-            let time = 2 * 60 * 60;
-            const timerElement = document.getElementById('timer');
-
-            const timer = setInterval(() => {
-                const hours = Math.floor(time / 3600);
-                const minutes = Math.floor((time % 3600) / 60);
-                const seconds = time % 60;
-
-                timerElement.textContent = `${String(hours).padStart(2, '0')}:${String(minutes).padStart(2, '0')}:${String(seconds).padStart(2, '0')}`;
-
-                if (time <= 0) {
-                    clearInterval(timer);
-                    alert('Time\'s up! Your exam will be submitted automatically.');
-                    submitExam();
-                }
-                time--;
-            }, 1000);
-        }
-
-        function submitExam() {
-            // Implement exam submission logic here
-            console.log('Submitting exam...');
-            window.location.href = 'welcome.html';
-        }
-
-        // Initialize everything when the page loads
-        document.addEventListener('DOMContentLoaded', () => {
-            setupProctoring();
-            startTimer();
-            generateQuestionNav();
-
-            document.getElementById('submit-exam').addEventListener('click', () => {
-                if (confirm('Are you sure you want to end the exam?')) {
-                    submitExam();
-                }
-            });
         });
-    </script>
+
+        // Disable text selection
+        document.addEventListener('selectstart', e => e.preventDefault());
+
+        // Handle page refresh/close
+        window.addEventListener('beforeunload', e => {
+            e.preventDefault();
+            e.returnValue = '';
+        });
+    }
+
+    // Local Storage Backup
+    function setupAutoSave() {
+        const autoSaveInterval = setInterval(() => {
+            const examState = {
+                responses,
+                markedQuestions: Array.from(markedQuestions),
+                timeRemaining,
+                warnings,
+                tabSwitchCount
+            };
+            localStorage.setItem('examState', JSON.stringify(examState));
+        }, 30000); // Auto-save every 30 seconds
+
+        // Clear interval when exam is submitted
+        window.addEventListener('beforeunload', () => {
+            clearInterval(autoSaveInterval);
+        });
+    }
+
+    // Response Time Analytics
+    function trackResponseTime() {
+        let questionStartTime = Date.now();
+        let responseTimeData = new Array(totalQuestions).fill(0);
+
+        function updateResponseTime(questionNumber) {
+            const timeSpent = Date.now() - questionStartTime;
+            responseTimeData[questionNumber - 1] += timeSpent;
+            questionStartTime = Date.now();
+        }
+
+        // Update time when navigating questions
+        document.getElementById('prev-question').addEventListener('click', () => {
+            updateResponseTime(currentQuestion);
+        });
+
+        document.getElementById('next-question').addEventListener('click', () => {
+            updateResponseTime(currentQuestion);
+        });
+
+        return responseTimeData;
+    }
+
+    // Initialize everything
+    function initializeAll() {
+        setupBrowserSecurity();
+        setupAutoSave();
+        const responseTimeData = trackResponseTime();
+
+        // Restore state from local storage if exists
+        const savedState = localStorage.getItem('examState');
+        if (savedState) {
+            const state = JSON.parse(savedState);
+            responses = state.responses;
+            markedQuestions = new Set(state.markedQuestions);
+            timeRemaining = state.timeRemaining;
+            warnings = state.warnings;
+            tabSwitchCount = state.tabSwitchCount;
+            loadQuestion(currentQuestion);
+        }
+    }
+
+    // Call initialization
+    initializeAll();
+</script>
 </body>
 </html>
