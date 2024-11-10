@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Student Login - xExams</title>
+    <title>Student Signup - xExams</title>
     <!-- Tailwind CSS CDN -->
     <script src="https://cdn.tailwindcss.com"></script>
     <style>
@@ -17,13 +17,13 @@
             padding: 1rem;
         }
 
-        .login-card {
+        .signup-card {
             background: white;
             padding: 2rem;
             border-radius: 1rem;
             box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
             width: 100%;
-            max-width: 28rem;
+            max-width: 32rem;
         }
 
         .input-field {
@@ -50,7 +50,6 @@
             border-radius: 0.5rem;
             font-weight: 500;
             transition: all 0.3s ease;
-            position: relative;
         }
 
         .submit-button:hover {
@@ -68,14 +67,6 @@
             color: #4338ca;
         }
 
-        .checkbox {
-            width: 1rem;
-            height: 1rem;
-            border-radius: 0.25rem;
-            border: 1px solid #d1d5db;
-        }
-
-        /* Animation for form elements */
         @keyframes fadeIn {
             from { opacity: 0; transform: translateY(10px); }
             to { opacity: 1; transform: translateY(0); }
@@ -85,47 +76,6 @@
             animation: fadeIn 0.5s ease-out forwards;
         }
 
-        /* Modal styles */
-        .modal {
-            display: none;
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background-color: rgba(0, 0, 0, 0.5);
-            align-items: center;
-            justify-content: center;
-            z-index: 1000;
-        }
-
-        .modal-content {
-            background: white;
-            padding: 2rem;
-            border-radius: 1rem;
-            width: 90%;
-            max-width: 500px;
-            position: relative;
-            animation: fadeIn 0.3s ease-out;
-        }
-
-        .close-button {
-            position: absolute;
-            top: 1rem;
-            right: 1rem;
-            font-size: 1.5rem;
-            cursor: pointer;
-            color: #6b7280;
-        }
-
-        .admin-card {
-            border: 1px solid #e5e7eb;
-            padding: 1rem;
-            border-radius: 0.5rem;
-            margin-top: 1rem;
-        }
-
-        /* Previous footer styles remain the same */
         .footer {
             border-top: 1px solid #e5e7eb;
             margin-top: 2rem;
@@ -145,36 +95,165 @@
             0%, 100% { transform: scale(1); }
             50% { transform: scale(1.1); }
         }
+
+        /* New styles for password visibility */
+        .password-container {
+            position: relative;
+        }
+
+        .password-toggle {
+            position: absolute;
+            right: 1rem;
+            top: 2.5rem;
+            cursor: pointer;
+            color: #6b7280;
+        }
+
+        .password-toggle:hover {
+            color: #4f46e5;
+        }
+
+        /* Loading animation */
+        .loading {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(255, 255, 255, 0.8);
+            justify-content: center;
+            align-items: center;
+            z-index: 1000;
+        }
+
+        .loading-spinner {
+            border: 4px solid #f3f3f3;
+            border-top: 4px solid #4f46e5;
+            border-radius: 50%;
+            width: 40px;
+            height: 40px;
+            animation: spin 1s linear infinite;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
     </style>
 </head>
 <body class="login-container">
-    <div class="login-card animated">
+    <!-- Loading Overlay -->
+    <div id="loading" class="loading">
+        <div class="loading-spinner"></div>
+    </div>
+
+    <div class="signup-card animated">
         <!-- Header -->
         <div class="text-center">
-            <h2 class="text-3xl font-bold text-gray-900 mb-2">Welcome, All the Best for Exams!!!</h2>
+            <h2 class="text-3xl font-bold text-gray-900 mb-2">Create Your Account</h2>
             <p class="text-gray-600 text-sm mb-8">
-                Please sign in to your student account
+                Join xExams to start your examination journey
             </p>
         </div>
 
-        <!-- Login Form -->
-        <form class="space-y-6">
-            <div class="space-y-4">
+        <!-- Signup Form -->
+        <form class="space-y-6" id="signupForm">
+            <!-- Previous fields remain the same until password section -->
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <div>
-                    <label for="email" class="block text-sm font-medium text-gray-700">
-                        Email address
+                    <label for="firstName" class="block text-sm font-medium text-gray-700">
+                        First Name
                     </label>
                     <input 
-                        id="email" 
-                        name="email" 
-                        type="email" 
+                        id="firstName" 
+                        name="firstName" 
+                        type="text" 
                         required 
                         class="input-field"
-                        placeholder="student@example.com"
+                        placeholder="Enter your first name"
                     >
                 </div>
 
                 <div>
+                    <label for="lastName" class="block text-sm font-medium text-gray-700">
+                        Last Name
+                    </label>
+                    <input 
+                        id="lastName" 
+                        name="lastName" 
+                        type="text" 
+                        required 
+                        class="input-field"
+                        placeholder="Enter your last name"
+                    >
+                </div>
+            </div>
+
+            <div>
+                <label for="rollNumber" class="block text-sm font-medium text-gray-700">
+                    University Roll Number
+                </label>
+                <input 
+                    id="rollNumber" 
+                    name="rollNumber" 
+                    type="text" 
+                    required 
+                    class="input-field"
+                    placeholder="Enter your roll number"
+                >
+            </div>
+
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div>
+                    <label for="semester" class="block text-sm font-medium text-gray-700">
+                        Semester
+                    </label>
+                    <select id="semester" name="semester" required class="input-field">
+                        <option value="">Select semester</option>
+                        <option value="1">Semester 1</option>
+                        <option value="2">Semester 2</option>
+                        <option value="3">Semester 3</option>
+                        <option value="4">Semester 4</option>
+                        <option value="5">Semester 5</option>
+                        <option value="6">Semester 6</option>
+                        <option value="7">Semester 7</option>
+                        <option value="8">Semester 8</option>
+                    </select>
+                </div>
+
+                <div>
+                    <label for="branch" class="block text-sm font-medium text-gray-700">
+                        Branch
+                    </label>
+                    <select id="branch" name="branch" required class="input-field">
+                        <option value="">Select branch</option>
+                        <option value="CSE">Computer Science</option>
+                        <option value="IT">Information Technology</option>
+                        <option value="ECE">Electronics & Communication</option>
+                        <option value="EE">Electrical Engineering</option>
+                        <option value="ME">Mechanical Engineering</option>
+                    </select>
+                </div>
+            </div>
+
+            <div>
+                <label for="email" class="block text-sm font-medium text-gray-700">
+                    Email Address
+                </label>
+                <input 
+                    id="email" 
+                    name="email" 
+                    type="email" 
+                    required 
+                    class="input-field"
+                    placeholder="student@example.com"
+                >
+            </div>
+
+            <!-- Updated password fields with visibility toggles -->
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div class="password-container">
                     <label for="password" class="block text-sm font-medium text-gray-700">
                         Password
                     </label>
@@ -184,44 +263,46 @@
                         type="password" 
                         required 
                         class="input-field"
-                        placeholder="Enter your password"
+                        placeholder="Create password"
                     >
+                    <span class="password-toggle" onclick="togglePassword('password')">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="currentColor" viewBox="0 0 16 16">
+                            <path d="M16 8s-3-5.5-8-5.5S0 8 0 8s3 5.5 8 5.5S16 8 16 8M1.173 8a13 13 0 0 1 1.66-2.043C4.12 4.668 5.88 3.5 8 3.5s3.879 1.168 5.168 2.457A13 13 0 0 1 14.828 8q-.086.13-.195.288c-.335.48-.83 1.12-1.465 1.755C11.879 11.332 10.119 12.5 8 12.5s-3.879-1.168-5.168-2.457A13 13 0 0 1 1.172 8z"/>
+                            <path d="M8 5.5a2.5 2.5 0 1 0 0 5 2.5 2.5 0 0 0 0-5M4.5 8a3.5 3.5 0 1 1 7 0 3.5 3.5 0 0 1-7 0"/>
+                        </svg>
+                    </span>
                 </div>
-            </div>
 
-            <div class="flex items-center justify-between my-6">
-                <div class="flex items-center">
-                    <input 
-                        id="remember-me" 
-                        name="remember-me" 
-                        type="checkbox"
-                        class="checkbox"
-                    >
-                    <label for="remember-me" class="ml-2 text-sm text-gray-900">
-                        Remember me
+                <div class="password-container">
+                    <label for="confirmPassword" class="block text-sm font-medium text-gray-700">
+                        Confirm Password
                     </label>
+                    <input 
+                        id="confirmPassword" 
+                        name="confirmPassword" 
+                        type="password" 
+                        required 
+                        class="input-field"
+                        placeholder="Retype password"
+                    >
+                    <span class="password-toggle" onclick="togglePassword('confirmPassword')">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="currentColor" viewBox="0 0 16 16">
+                            <path d="M16 8s-3-5.5-8-5.5S0 8 0 8s3 5.5 8 5.5S16 8 16 8M1.173 8a13 13 0 0 1 1.66-2.043C4.12 4.668 5.88 3.5 8 3.5s3.879 1.168 5.168 2.457A13 13 0 0 1 14.828 8q-.086.13-.195.288c-.335.48-.83 1.12-1.465 1.755C11.879 11.332 10.119 12.5 8 12.5s-3.879-1.168-5.168-2.457A13 13 0 0 1 1.172 8z"/>
+                            <path d="M8 5.5a2.5 2.5 0 1 0 0 5 2.5 2.5 0 0 0 0-5M4.5 8a3.5 3.5 0 1 1 7 0 3.5 3.5 0 0 1-7 0"/>
+                        </svg>
+                    </span>
                 </div>
-
-                <a href="#" class="text-sm link">
-                    Forgot your password?
-                </a>
             </div>
 
             <button type="submit" class="submit-button">
-                <span class="absolute left-0 inset-y-0 flex items-center pl-3">
-                    <!-- Lock Icon -->
-                    <svg class="h-5 w-5 text-indigo-300" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor">
-                        <path fill-rule="evenodd" d="M5 9V7a5 5 0 0110 0v2a2 2 0 012 2v5a2 2 0 01-2 2H5a2 2 0 01-2-2v-5a2 2 0 012-2zm8-2v2H7V7a3 3 0 016 0z" clip-rule="evenodd" />
-                    </svg>
-                </span>
-                Log In
+                Create Account
             </button>
 
             <div class="text-center mt-6">
                 <p class="text-sm text-gray-600">
-                    Don't have an account? 
-                    <a onclick="openModal()" class="link font-medium">
-                        Contact your administrator
+                    Already have an account? 
+                    <a href="login.html" class="link font-medium">
+                        Sign in here
                     </a>
                 </p>
             </div>
@@ -234,67 +315,60 @@
         </div>
     </div>
 
-    <!-- Admin Contact Modal -->
-    <div id="adminModal" class="modal">
-        <div class="modal-content">
-            <span class="close-button" onclick="closeModal()">&times;</span>
-            <h2 class="text-2xl font-bold text-gray-900 mb-4">Administrator Contact Information</h2>
-            
-            <div class="admin-card">
-                <h3 class="font-semibold text-lg text-gray-900">School of Technology</h3>
-                <div class="space-y-2 mt-3">
-                    <p class="text-gray-700"><strong>Faculty Name:</strong> Dr. Janak Patel</p>
-                    <p class="text-gray-700"><strong>Designation:</strong> Assistant Professor</p>
-                    <p class="text-gray-700"><strong>Cabin:</strong> Room no: 701, F Block</p>
-                    <p class="text-gray-700"><strong>Phone:</strong> <a href="tel:+91 8200XXXXXX" class="link">+91 8200XXXXXX</a></p>
-                    <p class="text-gray-700"><strong>Email:</strong> <a href="mailto:admin@college.edu" class="link">admin@college.edu</a></p>
-                </div>
-            </div>
-
-            <div class="admin-card">
-                <h3 class="font-semibold text-lg text-gray-900">Technical Support</h3>
-                <div class="space-y-2 mt-3">
-                    <p class="text-gray-700"><strong>Faculty Name:</strong> Mr. Mohan Raj</p>
-                    <p class="text-gray-700"><strong>Designation:</strong> IT Administrator</p>
-                    <p class="text-gray-700"><strong>Cabin:</strong> Room 101, IT Department</p>
-                    <p class="text-gray-700"><strong>Phone:</strong> <a href="tel:+91 8200XXXXXX" class="link">+91 8200XXXXXX</a></p>
-                    <p class="text-gray-700"><strong>Email:</strong> <a href="mailto:support@college.edu" class="link">support@college.edu</a></p>
-                </div>
-            </div>
-        </div>
-    </div>
-
     <script>
-        // Form validation
-        document.querySelector('form').addEventListener('submit', function(e) {
-            e.preventDefault();
-            const email = document.getElementById('email').value;
-            const password = document.getElementById('password').value;
+        // Toggle password visibility
+        function togglePassword(fieldId) {
+            const field = document.getElementById(fieldId);
+            field.type = field.type === 'password' ? 'text' : 'password';
+        }
 
-            if (!email || !password) {
-                alert('Please fill in all fields');
+        // Form validation and submission
+        document.getElementById('signupForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+            
+            const password = document.getElementById('password').value;
+            const confirmPassword = document.getElementById('confirmPassword').value;
+            
+            if (password !== confirmPassword) {
+                alert('Passwords do not match!');
                 return;
             }
 
-            console.log('Login attempt:', { email });
-        });
+            // Basic form validation
+            const requiredFields = [
+                'firstName', 'lastName', 'rollNumber', 'semester',
+                'branch', 'email', 'password', 'confirmPassword'
+            ];
 
-        // Modal functions
-        function openModal() {
-            document.getElementById('adminModal').style.display = 'flex';
-        }
-
-        function closeModal() {
-            document.getElementById('adminModal').style.display = 'none';
-        }
-
-        // Close modal when clicking outside
-        window.onclick = function(event) {
-            const modal = document.getElementById('adminModal');
-            if (event.target == modal) {
-                closeModal();
+            for (const field of requiredFields) {
+                const value = document.getElementById(field).value.trim();
+                if (!value) {
+                    alert('Please fill in all required fields');
+                    return;
+                }
             }
-        }
+
+            // Add email validation
+            const email = document.getElementById('email').value;
+            const emailPattern = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+            if (!emailPattern.test(email)) {
+                alert('Please enter a valid email address');
+                return;
+            }
+
+            // Show loading overlay
+            document.getElementById('loading').style.display = 'flex';
+
+            // Simulate account creation delay
+            setTimeout(() => {
+                // Hide loading overlay
+                document.getElementById('loading').style.display = 'none';
+                
+                // Show success message and redirect
+                alert('Account created successfully! Redirecting to login page...');
+                window.location.href = 'login.html';
+            }, 1500);
+        });
     </script>
 </body>
 </html>
