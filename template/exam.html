@@ -5,6 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>xExams - Online Examination</title>
     <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/4.0.1/socket.io.js"></script>
     <style>
         .gradient-bg {
             background: linear-gradient(135deg, #f0f7ff 0%, #e0e7ff 100%);
@@ -19,6 +20,29 @@
             border: 2px solid #4f46e5;
             background-color: #000;
             z-index: 1000;
+        }
+        .warning-banner {
+            position: fixed;
+            top: 20px;
+            left: 50%;
+            transform: translateX(-50%);
+            background-color: #ef4444;
+            color: white;
+            padding: 0.5rem 1rem;
+            border-radius: 0.375rem;
+            z-index: 1002;
+            display: none;
+        }
+        .warning-list {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            background-color: rgba(239, 68, 68, 0.9);
+            color: white;
+            padding: 1rem;
+            border-radius: 0.375rem;
+            z-index: 1002;
+            max-width: 300px;
         }
         .question-card {
             transition: all 0.3s ease;
@@ -37,6 +61,17 @@
     </style>
 </head>
 <body class="gradient-bg min-h-screen">
+    <!-- Warning Banner -->
+    <div id="warning-banner" class="warning-banner">
+        Warning: Suspicious Activity Detected
+    </div>
+
+    <!-- Warning List -->
+    <div id="warning-list" class="warning-list hidden">
+        <h3 class="font-bold mb-2">Warnings:</h3>
+        <ul id="warnings"></ul>
+    </div>
+
     <!-- Navigation -->
     <nav class="bg-white shadow-lg">
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
@@ -66,9 +101,9 @@
             </div>
         </div>
 
-        <!-- Question Section -->
-        <div class="space-y-6">
-            <!-- Question Card -->
+        <!-- Questions Container -->
+        <div id="questions-container" class="space-y-6">
+            <!-- Sample Question -->
             <div class="bg-white rounded-xl shadow-md p-6 question-card">
                 <div class="flex justify-between mb-4">
                     <span class="text-indigo-600 font-semibold">Question 1 of 30</span>
@@ -113,31 +148,157 @@
     <!-- Question Navigation -->
     <div class="fixed bottom-0 left-0 right-0 bg-white border-t shadow-lg p-4">
         <div class="max-w-7xl mx-auto">
-            <div class="flex flex-wrap gap-2">
-                <button class="w-10 h-10 rounded-lg bg-green-100 text-green-600 flex items-center justify-center font-semibold">1</button>
-                <button class="w-10 h-10 rounded-lg bg-gray-100 text-gray-600 flex items-center justify-center font-semibold">2</button>
-                <button class="w-10 h-10 rounded-lg bg-gray-100 text-gray-600 flex items-center justify-center font-semibold">3</button>
-                <!-- Add more question numbers as needed -->
+            <div class="flex flex-wrap gap-2" id="question-nav">
+                <!-- Question navigation buttons will be generated here -->
             </div>
         </div>
     </div>
 
     <script>
-        // Camera access
-        async function setupCamera() {
-            try {
-                const stream = await navigator.mediaDevices.getUserMedia({ video: true });
-                const videoElement = document.getElementById('camera-feed');
-                videoElement.srcObject = stream;
-            } catch (err) {
-                console.error('Error accessing camera:', err);
-                alert('Camera access is required for this examination. Please allow camera access and refresh the page.');
+        let socket;
+        let videoElement;
+        let canvas;
+        let warningTimeout;
+        let currentQuestion = 1;
+        const totalQuestions = 30;
+
+        // Sample questions data
+        const questionsData = [
+            {
+                id: 1,
+                question: "What is the time complexity of binary search algorithm?",
+                options: ["O(n)", "O(log n)", "O(n²)", "O(n log n)"],
+                marks: 2
+            },
+            // Add more questions here
+        ];
+
+        function generateQuestionNav() {
+            const nav = document.getElementById('question-nav');
+            for (let i = 1; i <= totalQuestions; i++) {
+                const button = document.createElement('button');
+                button.className = `w-10 h-10 rounded-lg ${i === 1 ? 'bg-green-100 text-green-600' : 'bg-gray-100 text-gray-600'} flex items-center justify-center font-semibold`;
+                button.textContent = i;
+                button.onclick = () => navigateToQuestion(i);
+                nav.appendChild(button);
             }
         }
 
-        // Timer functionality
+        function navigateToQuestion(questionNumber) {
+            // Update current question
+            currentQuestion = questionNumber;
+            
+            // Update navigation buttons
+            const navButtons = document.querySelectorAll('#question-nav button');
+            navButtons.forEach((btn, index) => {
+                if (index + 1 === questionNumber) {
+                    btn.className = 'w-10 h-10 rounded-lg bg-green-100 text-green-600 flex items-center justify-center font-semibold';
+                } else {
+                    btn.className = 'w-10 h-10 rounded-lg bg-gray-100 text-gray-600 flex items-center justify-center font-semibold';
+                }
+            });
+
+            // Load question content
+            // In a real implementation, you would load the actual question data
+            updateQuestionDisplay(questionNumber);
+        }
+
+        function updateQuestionDisplay(questionNumber) {
+            const questionDisplay = document.querySelector('.question-card');
+            questionDisplay.querySelector('.text-indigo-600').textContent = `Question ${questionNumber} of ${totalQuestions}`;
+            
+            // Update navigation buttons
+            const prevButton = questionDisplay.querySelector('button:first-of-type');
+            const nextButton = questionDisplay.querySelector('button:last-of-type');
+            
+            prevButton.disabled = questionNumber === 1;
+            nextButton.disabled = questionNumber === totalQuestions;
+            
+            if (prevButton.disabled) {
+                prevButton.className = 'bg-gray-200 text-gray-700 px-4 py-2 rounded-lg cursor-not-allowed';
+            } else {
+                prevButton.className = 'bg-gray-200 text-gray-700 px-4 py-2 rounded-lg hover:bg-gray-300';
+            }
+            
+            if (nextButton.disabled) {
+                nextButton.className = 'bg-gray-300 text-gray-500 px-4 py-2 rounded-lg cursor-not-allowed';
+            } else {
+                nextButton.className = 'bg-indigo-600 text-white px-4 py-2 rounded-lg hover:bg-indigo-700';
+            }
+        }
+
+        async function setupProctoring() {
+            videoElement = document.getElementById('camera-feed');
+            canvas = document.createElement('canvas');
+            
+            try {
+                const stream = await navigator.mediaDevices.getUserMedia({ video: true });
+                videoElement.srcObject = stream;
+                
+                // Connect to WebSocket
+                socket = io('http://localhost:5000');
+                
+                socket.on('connect', () => {
+                    console.log('Connected to server');
+                });
+                
+                socket.on('processing_result', handleProcessingResult);
+                
+                // Start sending frames
+                startFrameCapture();
+                
+            } catch (err) {
+                console.error('Error accessing camera:', err);
+                alert('Camera access is required for this examination.');
+            }
+        }
+
+        function startFrameCapture() {
+            setInterval(() => {
+                if (videoElement.readyState === videoElement.HAVE_ENOUGH_DATA) {
+                    canvas.width = videoElement.videoWidth;
+                    canvas.height = videoElement.videoHeight;
+                    
+                    const ctx = canvas.getContext('2d');
+                    ctx.drawImage(videoElement, 0, 0);
+                    
+                    const frameData = canvas.toDataURL('image/jpeg', 0.8);
+                    socket.emit('process_frame', { frame: frameData });
+                }
+            }, 1000);
+        }
+
+        function handleProcessingResult(data) {
+            const warnings = data.warnings;
+            if (warnings && warnings.length > 0) {
+                showWarnings(warnings);
+            }
+        }
+
+        function showWarnings(warnings) {
+            const warningList = document.getElementById('warning-list');
+            const warningItems = document.getElementById('warnings');
+            
+            warningItems.innerHTML = '';
+            warnings.forEach(warning => {
+                const li = document.createElement('li');
+                li.textContent = warning;
+                warningItems.appendChild(li);
+            });
+            
+            warningList.classList.remove('hidden');
+            
+            if (warningTimeout) {
+                clearTimeout(warningTimeout);
+            }
+            
+            warningTimeout = setTimeout(() => {
+                warningList.classList.add('hidden');
+            }, 3000);
+        }
+
         function startTimer() {
-            let time = 2 * 60 * 60; // 2 hours in seconds
+            let time = 2 * 60 * 60;
             const timerElement = document.getElementById('timer');
 
             const timer = setInterval(() => {
@@ -150,22 +311,27 @@
                 if (time <= 0) {
                     clearInterval(timer);
                     alert('Time\'s up! Your exam will be submitted automatically.');
-                    // Add submission logic here
+                    submitExam();
                 }
                 time--;
             }, 1000);
         }
 
-        // Initialize
-        document.addEventListener('DOMContentLoaded', () => {
-            setupCamera();
-            startTimer();
+        function submitExam() {
+            // Implement exam submission logic here
+            console.log('Submitting exam...');
+            window.location.href = 'welcome.html';
+        }
 
-            // Handle end exam button
+        // Initialize everything when the page loads
+        document.addEventListener('DOMContentLoaded', () => {
+            setupProctoring();
+            startTimer();
+            generateQuestionNav();
+
             document.getElementById('submit-exam').addEventListener('click', () => {
                 if (confirm('Are you sure you want to end the exam?')) {
-                    // Add submission logic here
-                    window.location.href = 'welcome.html';
+                    submitExam();
                 }
             });
         });
